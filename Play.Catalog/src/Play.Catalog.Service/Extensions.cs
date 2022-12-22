@@ -16,7 +16,7 @@ namespace Play.Catalog.Service
                 item.Name, 
                 item.Description, 
                 item.Price, 
-                item.CreateDate);
+                item.CreatedDate);
         }
     }
 }

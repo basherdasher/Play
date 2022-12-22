@@ -7,15 +7,13 @@ using System.Threading.Tasks;
 
 namespace Play.Catalog.Service.Repositories
 {
-    public class ItemsRepository
+    public class ItemsRepository : IItemsRepository
     {
         private const string collectionName = "items";
         private readonly IMongoCollection<Item> dbCollection;
         private readonly FilterDefinitionBuilder<Item> filterBuilder = Builders<Item>.Filter;
-        public ItemsRepository()
+        public ItemsRepository(IMongoDatabase database)
         {
-            var mongoClient = new MongoClient("mongodb://localhost:27017");
-            var database = mongoClient.GetDatabase("Catalog");
             dbCollection = database.GetCollection<Item>(collectionName);
         }
 
@@ -34,7 +32,7 @@ namespace Play.Catalog.Service.Repositories
         {
             if (entity == null)
             {
-                throw new NullReferenceException(nameof(entity));
+                throw new ArgumentNullException(nameof(entity));
             }
 
             await dbCollection.InsertOneAsync(entity);
@@ -44,11 +42,11 @@ namespace Play.Catalog.Service.Repositories
         {
             if (entity == null)
             {
-                throw new NullReferenceException(nameof(entity));
+                throw new ArgumentNullException(nameof(entity));
             }
 
             FilterDefinition<Item> filter = filterBuilder.Eq(entityToUpdate => entityToUpdate.Id, entity.Id);
-            await dbCollection.ReplaceOneAsync(filter, entity); 
+            await dbCollection.ReplaceOneAsync(filter, entity);
         }
 
         public async Task RemoveAsync(Guid id)
